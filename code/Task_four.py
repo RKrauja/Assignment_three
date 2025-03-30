@@ -1,15 +1,19 @@
 from machine import Pin, I2C
 import time
 
+# This tasks code follows the same idea as for task three, but in this case we have the LED pins routed to a RGB led
+
 temp_sensor = I2C(scl=Pin(22), sda=Pin(23))
 
 address = 24
 temp_reg = 5
-res_reg = 8  # Unused in this example, but kept per your original code
 
+# After some testing we concluded that we have a common-anode type LED
+# Meaning that we have connected it to VCC rather than GND and from a coding perspective the values are inverted:
+# a pin with value of 1 means that specific led "color" is off and with the value of 0 it's on
 leds = [
     Pin(27, Pin.OUT),  # green_led
-    Pin(12, Pin.OUT),  # blue
+    Pin(12, Pin.OUT),  # blue_led
     Pin(13, Pin.OUT),  # red_led
 ]
 
@@ -29,14 +33,17 @@ while True:
     time.sleep(0.1)
 
     if temperature < 25:
+        # Set only green light on
         leds[0].value(0)
         leds[1].value(1)
         leds[2].value(1)
     elif temperature < 27:
+        # Set green + red = yellow light on
         leds[0].value(0)
         leds[1].value(1)
         leds[2].value(0)
     else:
+        # set red light on
         leds[0].value(1)
         leds[1].value(1)
         leds[2].value(0)
